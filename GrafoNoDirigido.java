@@ -25,6 +25,7 @@ public class GrafoNoDirigido implements Cloneable
     public GrafoNoDirigido() {
         adyList = new Hashtable< String, Vector<Arista> >();
         vertices = new Hashtable<String, Vertice>();
+        aristas = new Hashtable<String, Arista>();
     }
 
     public boolean cargarGrafo(String dirArchivo) throws IOException {
@@ -85,9 +86,14 @@ public class GrafoNoDirigido implements Cloneable
     public boolean agregarVertice(String id, double peso) {
         return agregarVertice(new Vertice(id, peso));
     }
-    public Vertice obtenerVertice(String id) {
-        return vertices.get(id);
-        // FALTA PONER NOSUCHELEMENTEXCEPTION
+
+    public Vertice obtenerVertice(String id) throws NoSuchElementException {
+        if (vertices.containsKey(id)) {
+            return vertices.get(id);
+        }
+        else {
+            throw new NoSuchElementException();
+        }
     }
 
     public boolean estaVertice(String id) {
@@ -148,42 +154,54 @@ public class GrafoNoDirigido implements Cloneable
         return aList;
     }
 
-    public int grado(String id) {
-        return adyList.get(id).size();
-        // FALTA NOSUCHELEMENTEXCEPTION
+    public int grado(String id) throws NoSuchElementException {
+        if (adyList.containsKey(id)) {
+            return adyList.get(id).size();
+        }
+        else {
+            throw new NoSuchElementException();
+        }
     }
 
-    public List<Vertice> adyacentes(String id) {
+    public List<Vertice> adyacentes(String id) throws NoSuchElementException {
         Vector<Vertice> adyacentes = new Vector<Vertice>();
         // iteramos sobre la lista de adyacencia del vertice de identificador id
-        Vector<Arista> adyU = adyList.get(id);
-        Iterator<Arista> itr = adyU.iterator();
-        while(itr.hasNext()) {
-            Arista a = itr.next();
-            Vertice v = ((a.getExtremo1().getId() == id)? a.getExtremo2() : a.getExtremo1());
-            adyacentes.add(v);
-        }
+        if (adyList.containsKey(id)) {
+            Vector<Arista> adyU = adyList.get(id);
+            Iterator<Arista> itr = adyU.iterator();
+            while(itr.hasNext()) {
+                Arista a = itr.next();
+                Vertice v = ((a.getExtremo1().getId() == id)? a.getExtremo2() : a.getExtremo1());
+                adyacentes.add(v);
+            }
 
-        return adyacentes;
-        // FALTA NOSUCHELEMENTXEXCEPTION
+            return adyacentes;
+        }
+        else {
+            throw new NoSuchElementException();
+        }
     }
  
-    public List<Lado> incidentes(String id) {
-        Vector<Lado> ret = new Vector<Lado>(); // lista a retornar
-        // Iteramos sobre las aristas
-        Set<String> keys = aristas.keySet();
-        Iterator<String> itr = keys.iterator();
-        while (itr.hasNext()) {
-            String k = itr.next();
-            Arista a = aristas.get(k);
-            Vertice u = a.getExtremo1(), v = a.getExtremo2();
-            // si uno de los vertices tiene identificador id
-            if (u.getId() == id || v.getId() == id) {
-                ret.add(a);
+    public List<Lado> incidentes(String id) throws NoSuchElementException {
+        if (vertices.containsKey(id)) {
+            Vector<Lado> ret = new Vector<Lado>(); // lista a retornar
+            // Iteramos sobre las aristas
+            Set<String> keys = aristas.keySet();
+            Iterator<String> itr = keys.iterator();
+            while (itr.hasNext()) {
+                String k = itr.next();
+                Arista a = aristas.get(k);
+                Vertice u = a.getExtremo1(), v = a.getExtremo2();
+                // si uno de los vertices tiene identificador id
+                if (u.getId() == id || v.getId() == id) {
+                    ret.add(a);
+                }
             }
+            return ret;
         }
-        return ret;
-        // FALTA NOSUCHELEMENTEXCEPTION
+        else {
+            throw new NoSuchElementException();
+        }
     }
 
     public Object clone() throws CloneNotSupportedException {
@@ -236,8 +254,12 @@ public class GrafoNoDirigido implements Cloneable
         }
     }
 
-    public Arista obtenerArista(String id) {
-        return aristas.get(id);
-        // FALTA NOSUCHELEMENTEXCEPTION
+    public Arista obtenerArista(String id) throws NoSuchElementException {
+        if (aristas.containsKey(id)) {
+            return aristas.get(id);
+        }
+        else {
+            throw new NoSuchElementException();
+        }
     }
 }
