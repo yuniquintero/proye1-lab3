@@ -16,6 +16,6 @@ public class Vertice {
 	}
 
 	public String toString() {
-		return "id: " + this.id + ", peso: " + String.valueOf(this.p);
+		return "{id: " + this.id + ", peso: " + String.valueOf(this.p) + "}";
 	}
 }

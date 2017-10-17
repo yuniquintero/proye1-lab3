@@ -5,9 +5,15 @@
 import java.util.*;
 
 public class ClienteGrafo {
-	public static void main(String [] args) throws NoSuchElementEception {
+	public static void main(String [] args) {
 		GrafoNoDirigido g = new GrafoNoDirigido();
-		g.cargarGrafo(test1.txt);
+
+		if (!g.cargarGrafo(args[0])) {
+			// si se leyó bien el archivo
+			System.out.println("Error al cargar el archivo");
+			return;
+		}
+
 		System.out.print("Numero de Vertices: ");
 		System.out.println(g.numeroDeVertices());
 
@@ -20,46 +26,57 @@ public class ClienteGrafo {
 		System.out.print("Lados: ");
 		System.out.println(g.lados().toString());
 
-		Scanner scan = new Scanner(System.in);
+		Scanner scan = new Scanner(System.in); // para leer input
 		String s;
 		String[] tok;
+		printOpciones();
 		while (true) {
 			try {
 				s = scan.nextLine();
-				tok = s.split(" ");
+				tok = s.split(" "); // opcion del usuario
 				// imprimir grado de id
-				if (tok[0] == "grado") {
+				if (tok[0].equals("grado")) {
 					System.out.println(g.grado(tok[1]));
 				}
-				else if (tok[0] == "ady") {
+				// imprimir adyacentes de id
+				else if (tok[0].equals("ady")) {
 					System.out.println(g.adyacentes(tok[1]).toString());
 				}
-				else if (tok[0] == "inc") {
-					SYstem.out.println(g.incidentes(tok[1]).toString());
+				// imprimir incidentes de id
+				else if (tok[0].equals("inc")) {
+					System.out.println(g.incidentes(tok[1]).toString());
 				}
-				else if (tok[0] == "prnt") {
+				// imprimir grafo
+				else if (tok[0].equals("prnt")) {
 					System.out.println(g.toString());
 				}
-				else if (tok[0] == "op") {
+				// imprimir opciones
+				else if (tok[0].equals("op")) {
 					printOpciones();
 				}
+				// salir
+				else if (tok[0].equals("salir")) {
+					break;
+				}
 				else {
-					System.out.println("Entrada Inválida. Intente de nuevo.\n");
+					System.out.println("Entrada Inválida " + tok[0] + ". Intente de nuevo.\n");
 				}
 			}
-			catch (NoSuchElementEception e) {
+			catch (NoSuchElementException e) {
 				System.out.println("ERROR: No existe tal elemento.");
 			}
 		}
 
 	}
 
-	public void printOpciones() {
-		System.out.println("grado <id> para obtener el grado del vertice con identificador <id>");
-		System.out.println("ady <id> para obtener los adyacentes del vertice con identificador <id>");
-		System.out.println("inc <id> para obtener los incidentes del vertice con identificador <id>");
-		System.out.println("prnt para llamar Grafo.toString()");
-		System.out.println("op para imprimir las opciones de nuevo");
-		System.out.println("\n\n");
+	public static void printOpciones() {
+		// Opciones del usuario
+		System.out.println("\n\ngrado <id>\tpara obtener el grado del vertice con identificador <id>");
+		System.out.println("ady <id>\tpara obtener los adyacentes del vertice con identificador <id>");
+		System.out.println("inc <id>\tpara obtener los incidentes del vertice con identificador <id>");
+		System.out.println("prnt\tpara llamar Grafo.toString()");
+		System.out.println("op\tpara imprimir las opciones de nuevo");
+		System.out.println("salir\tpara salir del programa");
+		System.out.println("\n");
 	}
 }

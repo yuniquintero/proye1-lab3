@@ -19,7 +19,7 @@ public class Arista extends Lado {
 	}
 
 	public String toString() {
-		return "id: " + this.getId() + ", peso: " + String.valueOf(this.getPeso()) + 
-			", extremos: (" + u.getId() + ", " + v.getId() + ")";
+		return "{id: " + this.getId() + ", peso: " + String.valueOf(this.getPeso()) + 
+			", extremos: (" + u.getId() + ", " + v.getId() + ")}";
 	}
 }
