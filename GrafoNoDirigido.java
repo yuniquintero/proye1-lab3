@@ -5,8 +5,9 @@
 import java.util.*;
 import java.io.*;
 import java.lang.Cloneable;
+import java.lang.Object;
 
-public class GrafoNoDirigido implements Cloneable
+public class GrafoNoDirigido implements Grafo, Cloneable
 {
     /*
         ATRIBUTOS
@@ -147,6 +148,8 @@ public class GrafoNoDirigido implements Cloneable
                 }
             }
 
+            this.n -= 1;
+
             return true;
         }
         else {
@@ -214,9 +217,33 @@ public class GrafoNoDirigido implements Cloneable
         }
     }
 
-    public Object clone() throws CloneNotSupportedException {
-        return super.clone();
+    public Object clone() {
+        GrafoNoDirigido g = new GrafoNoDirigido();
+        // clonar lista de adyacencias
+        Set<String> keys = this.adyList.keySet();
+        Iterator<String> itr = keys.iterator();
+        while(itr.hasNext()) {
+            String k = itr.next();
+            g.adyList.put(k, this.adyList.get(k));
+        }
+
+        // clonar vertices
+        keys = this.vertices.keySet();
+        itr = keys.iterator();
+        while(itr.hasNext()) {
+            String k = itr.next();
+            g.vertices.put(k, this.vertices.get(k));
+        }
+        // clonar aristas
+        keys = this.aristas.keySet();
+        itr = keys.iterator();
+        while(itr.hasNext()) {
+            String k = itr.next();
+            g.aristas.put(k, this.aristas.get(k));
+        }
+        return g;
     }
+
 
     public String toString() {
         String ret = new String();
@@ -224,7 +251,7 @@ public class GrafoNoDirigido implements Cloneable
         Iterator<String> itr = keys.iterator();
         while(itr.hasNext()) {
             String k = itr.next();
-            ret += "Vertice con id " + k + ": ";
+            ret += vertices.get(k).toString() + " =>\t";
             ret += adyList.get(k).toString() + "\n"; // Aristas Incidentes del vertice con identificador k
         }
 

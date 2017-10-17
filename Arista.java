@@ -22,4 +22,8 @@ public class Arista extends Lado {
 		return "{id: " + this.getId() + ", peso: " + String.valueOf(this.getPeso()) + 
 			", extremos: (" + u.getId() + ", " + v.getId() + ")}";
 	}
+
+	public Object clone() {
+		return (new Arista(this.id, this.peso, this.u, this.v));
+	}
 }

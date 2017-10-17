@@ -16,7 +16,7 @@ public interface Grafo
 
     public boolean agregarVertice(String id, double peso);
     
-    public Vertice obtenerVertice(String id);
+    public Vertice obtenerVertice(String id) throws NoSuchElementException;
 
     public boolean estaVertice(String id);
 
@@ -28,13 +28,13 @@ public interface Grafo
 
     public List<Lado> lados();
 
-    public int grado(String id);
+    public int grado(String id) throws NoSuchElementException;
 
-    public List<Vertice> adyacentes(String id);
+    public List<Vertice> adyacentes(String id) throws NoSuchElementException;
  
-    public List<Lado> incidentes(String id);
+    public List<Lado> incidentes(String id) throws NoSuchElementException;
 
-    public Object clone();
+    public Object clone() throws CloneNotSupportedException;
 
     public String toString();
     
