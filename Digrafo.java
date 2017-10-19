@@ -23,7 +23,7 @@ public class Digrafo implements Grafo{
     -. aList: Hashtable, tabla de hash con keys igual al id del arco,
     el valor siendo un Arco
     */
-    private int n=0, m=0; 
+    private int n, m; 
     private Hashtable <String,Vector<Arco>> adyList;             
     private Hashtable <String, Vertice> vList;
     private Hashtable <String, Arco> aList;
@@ -31,13 +31,11 @@ public class Digrafo implements Grafo{
     // Constructor del Digrafo
 
     public Digrafo() {
-       crearGrafoDirigido();
-    }
-
-    public void crearGrafoDirigido(){
         this.adyList = new Hashtable<String,Vector<Arco>>();
         this.vList = new Hashtable<String,Vertice>();
         this.aList = new Hashtable<String, Arco>();
+        this.n = 0;
+        this.m = 0;
     }
 
     /* 
@@ -45,42 +43,55 @@ public class Digrafo implements Grafo{
     en el archivo de texto
     Parametros: Digrafo, direccion del archivo de texto
     Salida: true si se logro cargar el grafo de manera exitosa, false si no
+    Orden: O(n+m) (n: cantidad de vertices, m: cantidad de arcos)
     */
 
-    public boolean cargarGrafo(String dirArchivo) throws Exception {
-        BufferedReader in = new BufferedReader(new FileReader(dirArchivo));
-        int numV, numA;
-        // leemos cantidad de vertices y arcos
-        numV = Integer.parseInt(in.readLine());
-        numA = Integer.parseInt(in.readLine());
-        //leemos vertices
-        for(int i=0;i<numV;i++){
-            String line = in.readLine();
-            String[] tok = line.split(" ");
-            String id = tok[0];
-            int p = Integer.parseInt(tok[1]);
-            agregarVertice(id, p);
-        }
-        //leemos arcos
-        for (int i=0;i<numA;i++) {
-            String line = in.readLine();
-            String[] tok = line.split(" ");
-            String id, u, v;
-            int p;
-            id = tok[0];
-            u = tok[1];
-            v = tok[2];
-            p = Integer.parseInt(tok[3]);
-            agregarArco(id, p, u, v);
-        }
+    public boolean cargarGrafo(String dirArchivo){
+        try{
+            BufferedReader in = new BufferedReader(new FileReader(dirArchivo));
+            int numV, numA;
+            // leemos cantidad de vertices y arcos
+            numV = Integer.parseInt(in.readLine());
+            numA = Integer.parseInt(in.readLine());
+            //leemos vertices
+            for(int i=0;i<numV;i++){
+                String line = in.readLine();
+                String[] tok = line.split(" ");
+                if(tok.length!=2){
+                    return false;
+                }
+                String id = tok[0];
+                double p = Double.parseDouble(tok[1]);
+                agregarVertice(id, p);
+            }
+            //leemos arcos
+            for (int i=0;i<numA;i++) {
+                String line = in.readLine();
+                String[] tok = line.split(" ");
+                if(tok.length!=4){
+                    return false;
+                }
+                String id, u, v;
+                double p;
+                id = tok[0];
+                u = tok[1];
+                v = tok[2];
+                p = Double.parseDouble(tok[3]);
+                agregarArco(id, p, u, v);
+            }
 
-        return true;//return false?
+            return true;//return false?
+        }
+        catch (IOException e) {
+            return false;
+        }
     }
 
     /*
     Metodo numeroDeVertices: Indica el numero de vertices que posee el grafo
     Parametros: Digrafo
     Salida: entero n, cantidad de vertices en el grafo
+    Orden: O(1)
     */
 
     public int numeroDeVertices() {
@@ -91,6 +102,7 @@ public class Digrafo implements Grafo{
     Metodo numeroDeLados: Indica el numero de lados que posee el grafo
     Parametros: Digrafo
     Salida: entero m, cantidad de lados en el grafo
+    Orden: O(1)
     */
 
     public int numeroDeLados() {
@@ -102,6 +114,7 @@ public class Digrafo implements Grafo{
     Parametros: Digrafo, Vertice v que sera agregado
     Salida: true si el vertice no se encuentra en el grafo y se agrega con exito, 
     false si lo contrario
+    Orden: O(1)
     */
 
     public boolean agregarVertice(Vertice v) {
@@ -120,18 +133,12 @@ public class Digrafo implements Grafo{
     double peso (peso del vertice)
     Salida: true si el vertice no se encuentra en el grafo y se agrega con exito, 
     false si lo contrario
+    Orden: O(1)
     */
 
     public boolean agregarVertice(String id, double peso) {
-        if(!estaVertice(id)){ //si el grafo no contiene ya al vertice
-            Vertice u = new Vertice(id, peso); //creamos un nuevo Vertice
-            this.vList.put(u.getId(), u);
-            this.adyList.put(u.getId(),new Vector<Arco>());
-            this.n++;
-            return true;
-        }
-        return false;
-        
+        Vertice u = new Vertice(id, peso); //creamos un nuevo Vertice
+        return agregarVertice(u);
     }
 
     /*
@@ -139,6 +146,7 @@ public class Digrafo implements Grafo{
     posee el identificador id
     Parametros: Digrafo, String id (identificador del vertice que se retornara)
     Salida: Vertice
+    Orden: O(1)
     */
     
     public Vertice obtenerVertice(String id) throws NoSuchElementException{
@@ -153,6 +161,7 @@ public class Digrafo implements Grafo{
     se encuentra o no en el grafo
     Parametros: Digrafo, String id (identificador del vertice a buscar)
     Salida: true si el grafo posee el vertice, false si no
+    Orden: O(1)
     */
 
     public boolean estaVertice(String id) {
@@ -167,6 +176,7 @@ public class Digrafo implements Grafo{
     Parametros: Digrafo, String u (identificador del extremo inicial del lado), 
                 String v (identificador del extremo final del lado)
     Salida: true si el grafo posee el lado, false si no
+    Orden: O(m) (m: cantidad de arcos)
     */
 
     public boolean estaLado(String u, String v){
@@ -174,7 +184,7 @@ public class Digrafo implements Grafo{
         while(it.hasNext()){ //iteramos sobre la lista lados() para buscar el lado (u,v)
             Lado l = it.next();
             Arco a = this.aList.get(l.getId());
-            if(a.getExtremoInicial().getId() == u && a.getExtremoFinal().getId() == v){
+            if(u.equals(a.getExtremoInicial().getId()) && v.equals(a.getExtremoFinal().getId())){
                 return true;
             }
         }
@@ -198,11 +208,11 @@ public class Digrafo implements Grafo{
                 Lado l = it.next();
                 Arco a = this.aList.get(l.getId());
                 Vertice u = a.getExtremoInicial(), v = a.getExtremoFinal();
-                if(u.getId() == id || v.getId() == id){
-                    if(v.getId() == id){
+                if(id.equals(u.getId()) || id.equals(v.getId())){
+                    if(id.equals(v.getId())){
                         this.adyList.get(u.getId()).remove(a);
                     }
-                    this.aList.remove(id);
+                    this.aList.remove(a.getId());
                     this.m--;
                 }
             }
@@ -237,6 +247,7 @@ public class Digrafo implements Grafo{
     Metodo grado: Calcula el grado del vertice identificado por id en el grafo
     Parametros: Digrafo, String id (identificador del vertice al que se le calculara el grado)
     Salida: entero, grado del vertice
+    Orden: O(m) (m: cantidad de arcos)
     */
 
     public int grado(String id) throws NoSuchElementException{
@@ -257,13 +268,20 @@ public class Digrafo implements Grafo{
             ArrayList<Vertice> ady = new ArrayList<Vertice>();
             List<Vertice> suc = sucesores(id);
             Iterator<Vertice> it1 = suc.iterator();
+            int c=0;
             while(it1.hasNext()){
-                ady.add(it1.next()); //insertamos vertices sucesores
+                Vertice u = it1.next();
+                if(!ady.contains(u)){
+                    ady.add(u); //insertamos vertices sucesores
+                }
             }
             List<Vertice> pre = predecesores(id);
             Iterator<Vertice> it2 = pre.iterator();
-            while(it2.hasNext()){
-                ady.add(it2.next()); // insertamos vertices predecesores
+           while(it2.hasNext()){
+                Vertice u = it2.next();
+                if(!ady.contains(u)){
+                    ady.add(u); //insertamos vertices predecesores
+                }
             }
             return ady;
         }
@@ -274,6 +292,7 @@ public class Digrafo implements Grafo{
     Metodo: incidentes: Obtiene los lados incidentes al vertice identificado por id en el grafo
     Parametros: Digrafo, String id (identificador del vertice)
     Salida: lista que contiene los lados incidentes al vertice
+    Orden: O(m) (m: cantidad de vertices)
     */
 
     public List<Lado> incidentes(String id) throws NoSuchElementException{
@@ -284,7 +303,7 @@ public class Digrafo implements Grafo{
                 Lado l = it.next();
                 Arco a = this.aList.get(l.getId());
                 Vertice v = a.getExtremoFinal();
-                if(v.getId() == id){
+                if(id.equals(v.getId())){
                     in.add(l);
                 }
             }
@@ -302,11 +321,18 @@ public class Digrafo implements Grafo{
 
     public Object clone() {
         Digrafo g = new Digrafo();
-        g.n=this.n;
-        g.m=this.m;
-        g.adyList = this.adyList;
-        g.vList = this.vList;
-        g.aList = this.aList;
+        Set<String> keys = this.adyList.keySet();
+        Iterator<String> itr = keys.iterator();
+        while(itr.hasNext()){
+            String k = itr.next();
+            g.adyList.put(k, this.adyList.get(k));
+        }
+        keys = this.vList.keySet();
+        itr = keys.iterator();
+        while(itr.hasNext()){
+            String k = itr.next();
+            g.aList.put(k, this.aList.get(k));
+        }
         return g;
     }
     
@@ -317,7 +343,16 @@ public class Digrafo implements Grafo{
     */
 
     public String toString() {
-        return this.adyList.toString() + this.vList.toString() + this.aList.toString();//???????
+        String ret = new String();
+        Set<String> keys = adyList.keySet();
+        Iterator<String> itr = keys.iterator();
+        while(itr.hasNext()) {
+            String k = itr.next();
+            ret += k + ": ";
+            ret += adyList.get(k).toString(); 
+        }
+
+        return ret; 
     }
 
     /*
@@ -325,6 +360,7 @@ public class Digrafo implements Grafo{
     Parametros: Digrafo, Arco a que sera agregado
     Salida: true si el arco no pertenecia al grafo y fue agregado con exito,
     false si no
+    Orden: O(1)
     */
 
     public boolean agregarArco(Arco a) {
@@ -344,29 +380,40 @@ public class Digrafo implements Grafo{
     String eFinal (identificador del extremo final del arco) 
     Salida: true si el arco no pertenecia al grafo y fue agregado con exito,
     false si no
+    Orden: O(1)
     */
 
     public boolean agregarArco(String id, double peso, String eInicial, String eFinal){
-        Vertice u = this.vList.get(eInicial), v = this.vList.get(eFinal);
-        Arco a = new Arco(id,peso,u,v);//creamos nuevo arco
-        if(!this.aList.containsKey(id)){
-            this.aList.put(id,a);
-            this.adyList.get(eInicial).add(a);
-            this.m++;
-            return true;
+        if (estaVertice(eInicial) && estaVertice(eFinal)) {
+            Vertice u = this.vList.get(eInicial), v = this.vList.get(eFinal);
+            Arco a = new Arco(id,peso,u,v);//creamos nuevo arco
+            return agregarArco(a);
         }
-        return false;
+        else {
+            return false;
+        }
     }
     
     /*
     Metodo gradoInterior: Calcula el grado interior del vertice identificado por id en el grafo
     Parametros: Digrafo, String id (identificador del vertice)
     Salida: entero, grado interior del vertice
+    Orden: O(m) (m: cantidad de arcos)
     */
 
     public int gradoInterior(String id) throws NoSuchElementException{
         if(estaVertice(id)){
-            return predecesores(id).size();
+            int c=0;
+            Iterator<Lado> it = this.lados().iterator();
+            while(it.hasNext()){ //buscamos en lista() arcos que tengan como entremo final v
+                Lado l = it.next();
+                Arco a = this.aList.get(l.getId());
+                Vertice u = a.getExtremoInicial(), v = a.getExtremoFinal();
+                if(id.equals(v.getId())){
+                    c++;
+                }
+            }
+            return c;
         }
         throw new NoSuchElementException();
     }
@@ -375,11 +422,12 @@ public class Digrafo implements Grafo{
     Metodo gradoExterior: Calcula el grado exterior del vertice identificado por id en el grafo
     Parametros: Digrafo, String id (identificador del vertice)
     Salida: entero, grado exterior del vertice
+    Orden: O(1)
     */
 
     public int gradoExterior(String id) throws NoSuchElementException{
         if(estaVertice(id)){
-            return sucesores(id).size();
+            return adyList.get(id).size();
         }
         throw new NoSuchElementException();
     }
@@ -389,6 +437,7 @@ public class Digrafo implements Grafo{
     del vertice con identificador id
     Parametros: Digrafo, String id (identificador del vertice)
     Salida: lista que contiene los vertices sucesores
+    Orden: O(n) (n: cantidad de vertices)
     */
 
     public List<Vertice> sucesores(String id) throws NoSuchElementException  {
@@ -397,7 +446,10 @@ public class Digrafo implements Grafo{
             Iterator<Arco> it = vec.iterator();
             Vector<Vertice> suc = new Vector<Vertice>();
             while(it.hasNext()){ //insertamos elementos de la lista de adyacencia
-                suc.add(it.next().getExtremoFinal());
+                Arco a = it.next();
+                if(!suc.contains(a.getExtremoFinal())){
+                    suc.add(a.getExtremoFinal());
+                }
             }
             return suc;
         }
@@ -419,8 +471,10 @@ public class Digrafo implements Grafo{
                 Lado l = it.next();
                 Arco a = this.aList.get(l.getId());
                 Vertice u = a.getExtremoInicial(), v = a.getExtremoFinal();
-                if(v.getId() == id){
-                    pre.add(u);
+                if(id.equals(v.getId())){
+                    if(!pre.contains(u)){
+                        pre.add(u);
+                    }
                 }
             }
             return pre;
@@ -432,10 +486,11 @@ public class Digrafo implements Grafo{
     Metodo eliminarArco: Elimina el arco en el grafo que este identificado con id
     Parametros: Digrafo, String id (identificador del arco)
     Salida: true si el arco fue eliminado con exito, false si no
+    Orden: 
     */
 
     public boolean eliminarArco(String id) {
-        if(!this.aList.containsKey(id)){
+        if(this.aList.containsKey(id)){
             Arco a = aList.get(id);
             Vertice u = a.getExtremoInicial(), v = a.getExtremoFinal();
             this.adyList.get(u.getId()).remove(a);
@@ -450,6 +505,7 @@ public class Digrafo implements Grafo{
     Metodo obtenerArco: Devuelve el arco que tiene como identificador id
     Parametros: Digrafo, String id (identificador del arco)
     Salida: arco
+    Orden: O(1)
     */
 
     public Arco obtenerArco(String id) throws NoSuchElementException{
