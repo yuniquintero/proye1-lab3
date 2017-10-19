@@ -78,6 +78,6 @@ public class Arco extends Lado {
 	 * @return Cadena de caracteres con la informacion del arco.
 	 */
 	public String toString() {
-		return etId() + " " + getExtremoInicial().getId() + " " + getExtremoFinal().getId() + " " + String.valueOf(getPeso());
+		return getId() + " " + getExtremoInicial().getId() + " " + getExtremoFinal().getId() + " " + String.valueOf(getPeso());
 	}
 }
